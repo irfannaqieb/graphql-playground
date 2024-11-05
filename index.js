@@ -1,6 +1,9 @@
 import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
 
+// To store the posts
+const posts = [];
+
 // This is to define the schema
 const typeDefs = `
   type Post {
@@ -12,6 +15,8 @@ const typeDefs = `
   type Query {
   hello: String!
   post: Post
+  posts : [Post] # To get all the posts
+  getPost(id: ID!) : Post # To get specific post
   }
 
   # Must declare the mutation type
@@ -29,12 +34,8 @@ const resolvers = {
   // Query Resolver
   Query: {
     hello: () => "Hello, world!",
-    post: () => ({
-      id: "1",
-      name: "First Post",
-      author: "Irfan",
-      date: "2024-03-20",
-    }),
+    posts: () => posts, // To return all the posts
+    getPost: (_, { id }) => posts.find((post) => post.id === id), // getting a specific post
   },
 
   //   Mutation Resolver
@@ -42,20 +43,22 @@ const resolvers = {
     // _ = parent (not used here)
     // args = mutation arguments (name, author, date)
     createPost: (_, args) => {
-      return {
+      const post = {
         id: String(Math.random()),
         name: args.name,
         author: args.author,
         date: args.date,
       };
+      posts.push(post); // save to our declared array
+      return post;
     },
   },
 };
 
 // Create the Apollo Server instance
 const server = new ApolloServer({
-  typeDefs,
-  resolvers,
+  typeDefs, // Our schema definition
+  resolvers, // Resolver functions
 });
 
 // Start the server using the standalone server
