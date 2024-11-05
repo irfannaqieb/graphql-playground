@@ -14,13 +14,19 @@ const typeDefs = `
   post: Post
   }
 
+  # Must declare the mutation type
+  type Mutation {
+  createPost(name: String!, author: String!, date: String) : Post
+  
+  }
+
 `;
 
 // Define the resolvers
 // resolver: function responsible for fetching the data corresponding
 //           to a specific field in the schema
-
 const resolvers = {
+  // Query Resolver
   Query: {
     hello: () => "Hello, world!",
     post: () => ({
@@ -29,6 +35,20 @@ const resolvers = {
       author: "Irfan",
       date: "2024-03-20",
     }),
+  },
+
+  //   Mutation Resolver
+  Mutation: {
+    // _ = parent (not used here)
+    // args = mutation arguments (name, author, date)
+    createPost: (_, args) => {
+      return {
+        id: String(Math.random()),
+        name: args.name,
+        author: args.author,
+        date: args.date,
+      };
+    },
   },
 };
 
